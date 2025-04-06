@@ -1,37 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %} {% endblock %}- FlaskApp</title>
+    <title>{% block title %} {% endblock %}</title>
+    
+    <!-- Подключение шрифта HSE Sans -->
     <style>
-        nav a {
-            color: #d64161;
+        @font-face {
+            font-family: "HSE Sans Regular";
+            src: url("{{ url_for('static', filename='fonts/HSESans-Regular.woff2') }}") format("woff2");
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: "HSE Sans SemiBold";
+            src: url("{{ url_for('static', filename='fonts/HSESans-SemiBold.woff2') }}") format("woff2");
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: "HSE Sans Bold";
+            src: url("{{ url_for('static', filename='fonts/HSESans-Bold.woff2') }}") format("woff2");
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            background-image: url("{{ url_for('static', filename='images/background.png') }}");
+            background-size: cover; /* Заполняет всю область экрана */
+            background-position: center; /* Центрирование изображения */
+            background-attachment: fixed; /* Фон остается на месте при прокрутке */
+            background-repeat: no-repeat; /* Отключает повторение изображения */
+            font-family: "HSE Sans", sans-serif; /* Устанавливаем шрифт для всего сайта */
+        }
+
+        nav {
+            color: #0D60AE;
             font-size: 2em;
             margin-left: 50px;
             text-decoration: none;
+            font-weight: bold;
         }
 
-        .book {
-            padding: 20px;
-            margin: 10px;
-            background-color: #f7f4f4;
+        a {
+            text-decoration: none;
         }
 
-        .jokeText {
-            margin-left: 50px;
-            font-size: 20px;
+        .flashes {
+            list-style: none;
+            padding: 0;
+            margin: 20px auto;
+            width: 60%;
+            text-align: center;
+        }
+
+        .flashes li {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            font-size: 24px;
+            font-family: "HSE Sans", sans-serif;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .nav-main-link,
+        .nav-main-link:visited {
+            color: #0D60AE;
+            text-decoration: none;
+        }
+        .nav-main-link:hover {
+            color: #083a99;
         }
     </style>
 </head>
 
 <body>
     <nav>
-        <a href="{{ url_for('index') }}">Главная страница</a>
-        <a href="{{ url_for('create') }}">Добавить анекдот</a>
+        {% block nav %}
+        <a href="{{ url_for('main') }}" class="nav-main-link">ТУРКЛУБ</a>
+        {% endblock %}
     </nav>
     <hr>
-    <div class="content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <div class="content">        
         {% block content %} {% endblock %}
     </div>
 </body>

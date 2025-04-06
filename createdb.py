@@ -50,31 +50,32 @@ print("Подключение успешно!")
 # Курсор - это объект, позволяющий взаимодействовать с БД
 cur = conn.cursor()
 
-# Создание таблицы
-cur.execute('DROP TABLE IF EXISTS Jokes;')
-cur.execute('CREATE TABLE Jokes (id serial PRIMARY KEY,'
-            'title varchar (150) NOT NULL,'
-            'author varchar (50) NOT NULL,'
-            'jokeText text,'
+# Создание таблицы Equipment
+cur.execute('DROP TABLE IF EXISTS Equipment;')
+cur.execute('CREATE TABLE Equipment ('
+            'id serial PRIMARY KEY,'
+            'type varchar(100) NOT NULL,'
+            'title varchar(150) NOT NULL,'
+            'description text,'
             'date_added date DEFAULT CURRENT_TIMESTAMP);'
             )
 
-# Вставка строки
 
-cur.execute('INSERT INTO Jokes (title, author, jokeText)'
+# Вставка строки в таблицу Equipment
+cur.execute('INSERT INTO Equipment (type, title, description) '
             'VALUES (%s, %s, %s)',
-            ('О числах Фибоначчи',
-             'Студент ПМИ',
-             'Эта шутка про числа Фибоначчи даже хуже, чем предыдущие две вместе взятые')
+            ('Палатка',
+             'Nessen Bjorn 2',
+             'Черная, 2-местная')
             )
 
-# Вставка строки
 
-cur.execute('INSERT INTO Jokes (title, author, jokeText)'
+# Вставка строки в таблицу Equipment
+cur.execute('INSERT INTO Equipment (type, title, description) '
             'VALUES (%s, %s, %s)',
-            ('Физики шутят',
-             'Неизвестный',
-             'Не можете найти работу? Умножьте время на мощность!')
+            ('Палатка',
+             'Btrace Guard 3',
+             'В черной сумке')
             )
 
 # Сохранение операции

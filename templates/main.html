@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Турклуб - Главная страница{% endblock %}
+
+{% block nav %}
+    <!-- Навигация не будет отображаться на этой странице -->
+{% endblock %}
+
+{% block content %}
+<style>
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* justify-content: center; */
+        height: 100vh;
+        text-align: center;
+    }
+    h1 {
+        line-height: 1.1; /* Уменьшаем межстрочный интервал */
+        margin-top: 150px; /* Поднять заголовок выше */
+        font-size: 80px;
+        font-weight: bold;
+        color: #0D60AE;
+        /* margin-bottom: 5px; /* Уменьшаем нижний отступ */
+        /* margin-top: 0; /* Если нужно убрать верхний отступ */
+    }
+    h2 {
+        line-height: 1.1; /* Уменьшаем межстрочный интервал */
+        margin-top: 0px;
+        font-size: 60px;
+        font-weight: bold;
+        color: #0D60AE;
+    }
+    .buttons {
+        margin-top: 20px;
+    }
+    .btn {
+        background-color: #0D60AE;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 20px;
+        margin: 10px;
+        border-radius: 50px;
+        cursor: pointer;
+    }
+    .btn:hover {
+        background-color: #083a99;
+    }
+    .login-text {
+        font-size: 16px;
+        color: #242424;
+        margin-top: 16px;
+        /* margin-right: 40px; /* Добавляет отступ справа */
+        position: relative;
+        left: -100px; /* Сдвигаем влево */
+    }
+
+    hr {
+        display: none;
+    }
+</style>
+
+<div class="container">
+    <h1>ТУРКЛУБ</h1>
+    <h2>АРЕНДА СНАРЯЖЕНИЯ</h2>
+
+    <div class="buttons">
+        <a href="{{ url_for('login') }}" class="btn">Вход</a>
+        <a href="{{ url_for('register') }}" class="btn">Регистрация</a>
+    </div>
+    <p class="login-text">Уже есть аккаунт?</p>
+</div>
+{% endblock %}

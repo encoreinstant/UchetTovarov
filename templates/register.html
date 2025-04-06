@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Регистрация</h2>
+    <form method="POST" action="{{ url_for('register') }}">
+        <label for="username" class="label">Имя пользователя:</label>
+        <input type="text" name="username" required>
+
+        <label for="password" class="label">Пароль:</label>
+        <input type="password" name="password" required>
+
+        <button type="submit" class="btn">Зарегистрироваться</button>
+    </form>
+    <p>Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a></p>
+</div>
+
+<style>
+    .form-container {
+        width: 350px;
+        margin: 100px auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        text-align: center;
+    }
+    input {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box; /* Включает padding и border в расчет общей ширины */
+    }
+    h2 {
+        line-height: 1.1; /* Уменьшаем межстрочный интервал */
+        margin-top: 0px;
+        font-size: 32px;
+        font-weight: bold;
+        color: #0D60AE;
+    }
+    .label {
+        font-size: 16px;
+        color: #333;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 0px;
+        text-align: left; /* Прижимаем текст к левому краю */
+    }
+
+    .btn {
+        width: 100%;
+        padding: 10px;
+        background-color: #244A9A;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+    }
+    .btn:hover {
+        background-color: #083a99;
+    }
+
+    a:visited {
+        color: #0D60AE;
+    }
+    a:hover {
+        color: #083a99;
+    }
+</style>
+{% endblock %}

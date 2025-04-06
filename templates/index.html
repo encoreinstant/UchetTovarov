@@ -1,15 +1,75 @@
-{% extends 'base.html' %}
-
 {% block content %}
-<h1>{% block title %} Анекдоты {% endblock %}</h1>
-{% for joke in jokes %}
-<div class='joke'>
-    <h3>#{{ joke[0] }} - {{ joke[1] }} by {{ joke[2] }}</h3>
+<h1 class="title">{% block title %} Оборудование {% endblock %}</h1>
 
-    <p class='jokeText'>{{ joke[3] }}</p>
-    <i>
-        <p>Добавлен {{ joke[4] }}</p>
-    </i>
-</div>
-{% endfor %}
+<style>
+    body {
+        font-family: Calibri, sans-serif;
+        background-image: url("{{ url_for('static', filename='images/background.png') }}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .title {
+        font-size: 32px;
+        color: #d64161;
+        text-align: center;
+        margin-bottom: 20px;
+        background: rgba(255, 255, 255, 0.7);
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 10px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 20px;
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f4b183;
+        color: white;
+        font-size: 22px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+</style>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Тип</th>
+            <th>Название</th>
+            <th>Описание</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in equipment %}
+        <tr>
+            <td>{{ item[0] }}</td>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+            <td>{{ item[3] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 {% endblock %}
