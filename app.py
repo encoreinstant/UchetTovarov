@@ -62,6 +62,9 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        name = request.form['name']
+        study_group = request.form['study_group']
+        telegram = request.form['telegram']
         
         hashed_password = generate_password_hash(password)
 
@@ -69,7 +72,7 @@ def register():
         cur = conn.cursor()
         
         try:
-            cur.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
+            cur.execute("INSERT INTO users (username, password, name, study_group, telegram) VALUES (%s, %s, %s, %s, %s)", (username, hashed_password, name, study_group, telegram))
             conn.commit()
         except psycopg2.Error as e:
             flash("Ошибка регистрации. Возможно, пользователь уже существует.", "error")
@@ -123,54 +126,6 @@ def arenda():
 
 
 
-# @app.route('/')
-# def home():
-#     return render_template('landing.html')
-
-# @app.route('/adm_login', methods=['GET', 'POST'])
-# def admin_login():
-#     error = None  # Обнуляем переменную ошибок
-#     if request.method == 'POST':
-#         username = request.form['username']  # Получаем имя пользователя
-#         password = request.form['password']  # Получаем пароль
-#         hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()  # Хешируем пароль
-
-#         conn = get_db_connection()
-#         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        
-#         # Выполняем запрос на поиск пользователя
-#         cur.execute('SELECT * FROM users WHERE username = %s', (username,))
-#         user = cur.fetchone()
-        
-#         cur.close()
-#         conn.close()
-
-#         if user and user['password'] == hashed_password:
-#             session['user_id'] = user['id']  # Создаём сессию
-#             return redirect(url_for('admin_panel'))  # Переход в админку
-#         else:
-#             error = 'Неправильное имя пользователя или пароль'
-
-#     return render_template('adm_login.html', error=error)
-
-# @app.route('/logout')
-# def logout():
-#     session.clear()  # Очистка сессии
-#     return redirect(url_for('home'))
-
-# @app.route('/admin_panel')
-# def admin_panel():
-#     if 'user_id' not in session:
-#         return redirect(url_for('admin_login'))
-#     return render_template('admin_panel.html')
-
-# @app.route('/about')
-# def about():
-#     return 'This is the about page'
-
-# @app.route('/user/<username>')
-# def show_user_profile(username):
-#     return f'User {username}'
 
 if __name__ == '__main__':
     app.run(debug=True)
