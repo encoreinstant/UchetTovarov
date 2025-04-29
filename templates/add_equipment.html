@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавить снаряжение{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Добавить снаряжение</h2>
+    <form method="POST" action="{{ url_for('add_equipment') }}">
+        <label class="label">Тип:</label>
+        <input type="text" name="type" required>
+
+        <label class="label">Название:</label>
+        <input type="text" name="title" required>
+
+        <label class="label">Описание:</label>
+        <input type="text" name="description">
+
+        <button type="submit" class="btn">Добавить</button>
+    </form>
+</div>
+
+<style>
+    .form-container {
+        width: 350px;
+        margin: 40px auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 50px;
+        text-align: center;
+        border: 3px solid #0D60AE;
+    }
+
+    input {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-top: 8px;
+        margin-bottom: 14px;
+        border: 1px solid #ccc;
+        border-radius: 50px;
+        box-sizing: border-box;
+    }
+
+    h2 {
+        margin-top: 0px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #0D60AE;
+    }
+
+    .label {
+        font-size: 16px;
+        color: #333;
+        font-weight: bold;
+        display: block;
+        margin: 0 10px;
+        text-align: left;
+    }
+
+    .btn {
+        background-color: #0D60AE;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        margin: 10px;
+        border-radius: 50px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #083a99;
+    }
+</style>
+{% endblock %}

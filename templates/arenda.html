@@ -1,7 +1,128 @@
 {% extends 'base.html' %}
 
-{% block title %}Турклуб - Аренда снаряжения{% endblock %}
+{% block title %}Аренда Снаряжения{% endblock %}
 
 {% block content %}
-    <h1>Вы на странице аренды снаряжения</h1>
+<div class="container">
+    <h1 class="heading">АРЕНДА СНАРЯЖЕНИЯ</h1>
+    <div class="equipment-table">
+        <table>
+            <thead>
+                <tr>
+                    <th class="th-top-left">Тип</th>
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th class="th-top-right">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in equipment %}
+                <tr>
+                    <td>{{ item.type }}</td>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.description }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('reserve', id=item.id) }}" class="btn green">Арендовать</a>
+                        {% if role == 'admin' %}
+                            <a href="{{ url_for('edit_equipment', id=item.id) }}" class="btn blue">Редактировать</a>
+                            <a href="{{ url_for('delete_equipment', id=item.id) }}" class="btn red">Удалить</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if role == 'admin' %}
+            <div class="admin-actions">
+                <a href="{{ url_for('add_equipment') }}" class="btn blue">Добавить снаряжение</a>
+                <a href="{{ url_for('view_reservations') }}" class="btn gray">Все брони</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 40px;
+    }
+    
+    .heading {
+        font-size: 2.5em;
+        color: #0D60AE;
+        margin-bottom: 20px;
+        margin-top: 0px;
+        font-weight: bold;
+    }
+    
+    .equipment-table {
+        background: white;
+        padding: 20px;
+        border: 3px solid #0D60AE;
+        border-radius: 40px;
+        width: 90%;
+        max-width: 900px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 12px 15px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+        background-color: #0D60AE;
+        color: white;
+        font-weight: normal;
+        
+        
+    }
+    .th-top-left{
+        border-top-left-radius: 20px;
+    }
+    .th-top-right{
+        border-top-right-radius: 20px;
+    }
+    
+    .btn {
+        padding: 8px 12px;
+        border-radius: 20px;
+        color: white;
+        text-decoration: none;
+        font-size: 1em;
+        margin: 2px;
+        display: inline-block;
+    }
+    
+    .btn.green {
+        background-color: #28a745;
+    }
+    
+    .btn.red {
+        background-color: #dc3545;
+    }
+    
+    .btn.blue {
+        background-color: #007bff;
+    }
+    
+    .btn.gray {
+        background-color: #6c757d;
+    }
+    
+    .admin-actions {
+        margin-top: 20px;
+        text-align: center;
+    }
+</style>
+    
 {% endblock %}

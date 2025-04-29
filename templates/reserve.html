@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Бронирование{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Бронирование снаряжения</h2>
+    {% if equipment %}
+        <p><strong>Вы выбрали:</strong> {{ equipment.name }}</p>
+    {% endif %}
+    <form method="POST" action="{{ url_for('reserve', equipment_id=equipment.id if equipment else None) }}">
+        <label class="label">Цель бронирования:</label>
+        <input type="text" name="reservation_goal" required>
+
+        <label class="label">Дата / Даты бронирования:</label>
+        <input type="text" name="reservation_date" required placeholder="Например: 14.04–16.04.2025">
+
+        <label class="label">Когда придете за снаряжением:</label>
+        <input type="text" name="date_take_equipment" required placeholder="Например: 13.04 после 18:00">
+
+        <button type="submit" class="btn">Забронировать</button>
+    </form>
+</div>
+
+<style>
+    .form-container {
+        width: 400px;
+        margin: 40px auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 50px;
+        text-align: center;
+        border: 3px solid #0D60AE;
+    }
+
+    input {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-top: 8px;
+        margin-bottom: 14px;
+        border: 1px solid #ccc;
+        border-radius: 50px;
+        box-sizing: border-box;
+    }
+
+    h2 {
+        margin-top: 0px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #0D60AE;
+    }
+
+    .label {
+        font-size: 16px;
+        color: #333;
+        font-weight: bold;
+        display: block;
+        margin: 0 10px;
+        text-align: left;
+    }
+
+    .btn {
+        background-color: #0D60AE;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        margin: 10px;
+        border-radius: 50px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #083a99;
+    }
+</style>
+{% endblock %}
