@@ -8,9 +8,9 @@
     {% if equipment %}
         <p><strong>Вы выбрали:</strong> {{ equipment.name }}</p>
     {% endif %}
-    <form method="POST" action="{{ url_for('reserve', equipment_id=equipment.id if equipment else None) }}">
+    <form method="POST" action="{{ url_for('reservation.reserve', equipment_id=equipment.id if equipment else None) }}">
         <label class="label">Цель бронирования:</label>
-        <input type="text" name="reservation_goal" required>
+        <input type="text" name="reservation_goal" required placeholder='Например: ПВД "Оленьи ручьи"'>
 
         <label class="label">Дата / Даты бронирования:</label>
         <input type="text" name="reservation_date" required placeholder="Например: 14.04–16.04.2025">

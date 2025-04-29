@@ -5,7 +5,7 @@
 {% block content %}
 <div class="form-container">
     <h2>Добавить снаряжение</h2>
-    <form method="POST" action="{{ url_for('add_equipment') }}">
+    <form method="POST" action="{{ url_for('equipment.add_equipment') }}">
         <label class="label">Тип:</label>
         <input type="text" name="type" required>
 

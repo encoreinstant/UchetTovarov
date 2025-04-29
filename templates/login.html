@@ -5,7 +5,7 @@
 {% block content %}
 <div class="form-container">
     <h2>Вход</h2>
-    <form method="POST" action="{{ url_for('login') }}">
+    <form method="POST" action="{{ url_for('auth.login') }}">
         <label class="label">Имя пользователя:</label>
         <input type="text" name="username" required>
 
@@ -14,7 +14,7 @@
 
         <button type="submit" class="btn">Войти</button>
     </form>
-    <p>Нет аккаунта? <a href="{{ url_for('register') }}">Регистрация</a></p>
+    <p>Нет аккаунта? <a href="{{ url_for('auth.register') }}">Регистрация</a></p>
 </div>
 
 <style>
