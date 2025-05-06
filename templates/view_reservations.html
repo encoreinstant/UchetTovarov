@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block title %}Список Бронирований{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="heading">СПИСОК БРОНИРОВАНИЙ</h1>
+    <div class="reservations-list">
+        {% if reservations %}
+            {% for reservation in reservations %}
+            <div class="reservation-block">
+
+                <!-- Крестик для удаления -->
+                <form action="{{ url_for('reservation.view_reservations') }}" method="POST" class="delete-form">
+                    <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                    <input type="hidden" name="action" value="delete">
+                    <button type="submit" class="delete-btn" title="Удалить бронирование">✖</button>
+                </form>
+
+                <div class="reservation-details">
+                    <div class="user-info">
+                        {{ reservation.username }}, {{ reservation.name }}, {{ reservation.study_group }}, {{ reservation.telegram }}
+                    </div>
+                    <div class="equipment-title">
+                        {{ reservation.equipment_title }}
+                    </div>
+                    <div class="reservation-info">
+                        <div>Цель бронирования: {{ reservation.reservation_goal }}</div>
+                        <div>Даты: {{ reservation.reservation_date }}</div>
+                        <div>Приду за снаряжением: {{ reservation.date_take_equipment }}</div>
+                    </div>
+                </div>
+                <div class="reservation-actions">
+                    {% if role == 'user' %}
+                        {% if reservation.reserve_status == 'Одобрено' %}
+                            <div class="status green">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                        {% if reservation.reserve_status == 'Отклонено' %}
+                            <div class="status red">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                        {% if reservation.reserve_status == 'На рассмотрении' %}
+                            <div class="status">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% if role == 'admin' %}
+                        <div class="status">{{ reservation.reserve_status }}</div>
+                        {% if reservation.reserve_status == 'На рассмотрении' %}
+                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit" class="btn green">Одобрить</button>
+                            </form>
+                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit" class="btn red">Отклонить</button>
+                            </form>
+                        {% elif reservation.reserve_status == 'Одобрено' %}
+                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit" class="btn red">Отклонить</button>
+                            </form>
+                        {% elif reservation.reserve_status == 'Отклонено' %}
+                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit" class="btn green">Одобрить</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <p>Бронирований пока нет.</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 40px;
+        width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+
+    }
+    
+    .heading {
+        font-size: 2.5em;
+        color: #0D60AE;
+        margin-bottom: 20px;
+        margin-top: -20px;
+        font-weight: bold;
+    }
+    
+    .reservations-list {
+        background: white;
+        padding: 20px;
+        border: 3px solid #0D60AE;
+        border-radius: 40px;
+        width: 95%;
+        max-width: none;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .reservation-block {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+        padding: 8px 0;
+        margin-bottom: 15px;
+
+        position: relative; /* Для позиционирования крестика */
+    }
+    
+    .reservation-block:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    
+    .reservation-details {
+        flex: 1;
+        text-align: left;
+        padding-left: 20px;
+    }
+    
+    .user-info {
+        font-size: 1.2em;
+        color: #333;
+    }
+    
+    .equipment-title {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #0D60AE;
+        margin: 5px 0;
+    }
+    
+    .reservation-info {
+        font-size: 1.2em;
+        color: #333;
+    }
+    
+    .reservation-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 200px;
+        padding-right: 60px;
+    }
+    
+    .status {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #0D60AE;
+    }
+
+    .status.green {
+        color:#28a745
+    }
+
+    .status.red {
+        color:#dc3545
+    }
+    
+    .btn {
+        padding: 8px 24px;
+        border-radius: 20px;
+        color: white;
+        text-decoration: none;
+        font-size: 1em;
+        margin: 2px;
+        display: inline-block;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .btn.green {
+        background-color: #28a745;
+    }
+    .btn.green:hover {
+        background-color: #218939;
+    }
+    
+    .btn.red {
+        background-color: #dc3545;
+    }
+    .btn.red:hover {
+        background-color: #be2d3c;
+    }
+    
+    p {
+        color: #0D60AE;
+        font-size: 1.2em;
+        text-align: center;
+    }
+
+    /* Стили для крестика */
+    .delete-form {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    .delete-btn {
+        background: none;
+        border: none;
+        color: #dc3545; /* Красный цвет для крестика */
+        font-size: 1.2em;
+        cursor: pointer;
+        padding: 5px;
+        transition: color 0.3s;
+    }
+
+    .delete-btn:hover {
+        color: #be2d3c; /* Более тёмный красный при наведении */
+    }
+</style>
+{% endblock %}

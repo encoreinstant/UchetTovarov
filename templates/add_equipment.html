@@ -16,6 +16,7 @@
         <input type="text" name="description">
 
         <button type="submit" class="btn">Добавить</button>
+        <a href="{{ url_for('equipment.arenda') }}" class="btn gray">Отмена</a>
     </form>
 </div>
 
@@ -31,6 +32,7 @@
     }
 
     input {
+        font-size: 1em;
         width: calc(100% - 20px);
         padding: 10px;
         margin-top: 8px;
@@ -69,6 +71,9 @@
 
     .btn:hover {
         background-color: #083a99;
+    }
+    .btn.gray {
+        background-color: #6c757d;
     }
 </style>
 {% endblock %}

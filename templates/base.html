@@ -35,7 +35,7 @@
             background-attachment: fixed;
             background-repeat: no-repeat;
             font-family: "HSE Sans", sans-serif;
-            overflow: hidden; /* запрет прокрутки */
+            overflow: auto; /* запрет прокрутки */
         }
 
         nav {
@@ -58,9 +58,63 @@
             color: #083a99;
         }
 
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #0D60AE; /* Цвет фона header'а */
+            color: white;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .header-title {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .header-title a,
+        .header-title a:visited {
+            color: white; /* Цвет текста "ТУРКЛУБ" */
+            text-decoration: none;
+        }
+
+        .header-title a:hover {
+            color: #d1ecf1; /* Цвет при наведении */
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Отступ между иконками, если их будет больше одной */
+            padding-right: 100px; /* Добавляем отступ справа */
+        }
+
+        .header-image {
+            height: 36px; /* Устанавливаем высоту картинки */
+            width: auto; /* Ширина подстраивается под пропорции */
+            object-fit: contain; /* Сохраняем пропорции картинки */
+            cursor: pointer; /* Указываем, что это кликабельный элемент */
+            transition: opacity 0.3s; /* Плавный эффект при наведении */
+        }
+
+        .header-image:hover {
+            opacity: 0.8; /* Лёгкое затемнение при наведении */
+        }
+
+        .content {
+            margin-top: 80px; /* Учитываем высоту header'а */
+            padding: 20px;
+        }
+
         .flash-container {
             position: fixed;
-            top: 20px;
+            top: 90px;
             right: 20px;
             z-index: 9999;
             display: flex;
@@ -78,6 +132,8 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             font-family: "HSE Sans", sans-serif;
             animation: fade-in 1s ease;
+
+            /* margin-top: 70px; /* Учитываем высоту header'а */
         }
 
         .flash-message .close-btn {
@@ -123,12 +179,18 @@
 </head>
 
 <body>
-    <nav>
-        {% block nav %}
-        <a href="{{ url_for('main.main_page') }}" class="nav-main-link">ТУРКЛУБ</a>
-        {% endblock %}
-    </nav>
-    <hr>
+    <header class="header">
+        <div class="header-title">
+            {% block nav %}
+            <a href="{{ url_for('equipment.arenda') }}">ТУРКЛУБ</a>
+            {% endblock %}
+        </div>
+        <div class="header-right">         
+            <a href="{{ url_for('auth.logout') }}" title="Выйти">
+                <img src="{{ url_for('static', filename='images/logout.svg') }}" alt="Logout" class="header-image">
+            </a>
+        </div>
+    </header>
 
     <!-- Flash Messages -->
     <div class="flash-container">

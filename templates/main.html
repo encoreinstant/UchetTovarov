@@ -1,76 +1,296 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="ru">
 
-{% block title %}Турклуб - Главная страница{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <title>Турклуб - Главная страница</title>
 
-{% block nav %}
-    <!-- Навигация не будет отображаться на этой странице -->
-{% endblock %}
+    <!-- Подключение шрифта HSE Sans -->
+    <style>
+        @font-face {
+            font-family: "HSE Sans Regular";
+            src: url("{{ url_for('static', filename='fonts/HSESans-Regular.woff2') }}") format("woff2");
+            font-weight: normal;
+            font-style: normal;
+        }
 
-{% block content %}
-<style>
+        @font-face {
+            font-family: "HSE Sans SemiBold";
+            src: url("{{ url_for('static', filename='fonts/HSESans-SemiBold.woff2') }}") format("woff2");
+            font-weight: normal;
+            font-style: normal;
+        }
 
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        /* justify-content: center; */
-        height: 100vh;
-        text-align: center;
-    }
-    h1 {
-        line-height: 1.1; /* Уменьшаем межстрочный интервал */
-        margin-top: 150px; /* Поднять заголовок выше */
-        font-size: 80px;
-        font-weight: bold;
-        color: #0D60AE;
-        /* margin-bottom: 5px; /* Уменьшаем нижний отступ */
-        /* margin-top: 0; /* Если нужно убрать верхний отступ */
-    }
-    h2 {
-        line-height: 1.1; /* Уменьшаем межстрочный интервал */
-        margin-top: 0px;
-        font-size: 60px;
-        font-weight: bold;
-        color: #0D60AE;
-    }
-    .buttons {
-        margin-top: 20px;
-    }
-    .btn {
-        background-color: #0D60AE;
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        font-size: 20px;
-        margin: 10px;
-        border-radius: 50px;
-        cursor: pointer;
-    }
-    .btn:hover {
-        background-color: #083a99;
-    }
-    .login-text {
-        font-size: 16px;
-        color: #242424;
-        margin-top: 16px;
-        /* margin-right: 40px; /* Добавляет отступ справа */
-        position: relative;
-        left: -100px; /* Сдвигаем влево */
-    }
+        @font-face {
+            font-family: "HSE Sans Bold";
+            src: url("{{ url_for('static', filename='fonts/HSESans-Bold.woff2') }}") format("woff2");
+            font-weight: normal;
+            font-style: normal;
+        }
 
-    hr {
-        display: none;
-    }
-</style>
+        body {
+            background-image: url("{{ url_for('static', filename='images/background2.png') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            font-family: "HSE Sans", sans-serif;
+            overflow: auto; /* запрет прокрутки */
+        }
 
-<div class="container">
-    <h1>ТУРКЛУБ</h1>
-    <h2>АРЕНДА СНАРЯЖЕНИЯ</h2>
+        nav {
+            color: #0D60AE;
+            font-size: 2em;
+            margin-left: 50px;
+            font-weight: bold;
+        }
 
-    <div class="buttons">
-        <a href="{{ url_for('auth.login') }}" class="btn">Вход</a>
-        <a href="{{ url_for('auth.register') }}" class="btn">Регистрация</a>
+        a {
+            text-decoration: none;
+        }
+
+        .nav-main-link,
+        .nav-main-link:visited {
+            color: #0D60AE;
+        }
+
+        .nav-main-link:hover {
+            color: #083a99;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #0D60AE; /* Цвет фона header'а */
+            color: white;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .header-title {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .header-title a,
+        .header-title a:visited {
+            color: white; /* Цвет текста "ТУРКЛУБ" */
+            text-decoration: none;
+        }
+
+        .header-title a:hover {
+            color: #d1ecf1; /* Цвет при наведении */
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Отступ между иконками, если их будет больше одной */
+            padding-right: 100px; /* Добавляем отступ справа */
+        }
+
+        .header-image {
+            height: 40px; /* Устанавливаем высоту картинки */
+            width: auto; /* Ширина подстраивается под пропорции */
+            object-fit: contain; /* Сохраняем пропорции картинки */
+            cursor: pointer; /* Указываем, что это кликабельный элемент */
+            transition: opacity 0.3s; /* Плавный эффект при наведении */
+        }
+
+        .header-image:hover {
+            opacity: 0.8; /* Лёгкое затемнение при наведении */
+       }
+
+        .content {
+            margin-top: 80px; /* Учитываем высоту header'а */
+            padding: 20px;
+        }
+
+        .flash-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .flash-message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            min-width: 250px;
+            max-width: 400px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-family: "HSE Sans", sans-serif;
+            animation: fade-in 1s ease;
+
+            
+        }
+
+        .flash-message .close-btn {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: inherit;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    
+
+    <!-- Flash Messages -->
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                        <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </div>
-    <p class="login-text">Уже есть аккаунт?</p>
-</div>
-{% endblock %}
+
+    <div class="content">
+        <style>
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 80vh;
+                text-align: center;
+            }
+            h1 {
+                line-height: 1.1; /* Уменьшаем межстрочный интервал */
+                margin-top: -40px; /* Поднять заголовок выше */
+                font-size: 80px;
+                font-weight: bold;
+                color: #0D60AE;
+                /* margin-bottom: 5px; /* Уменьшаем нижний отступ */
+                /* margin-top: 0; /* Если нужно убрать верхний отступ */
+            }
+            h2 {
+                line-height: 1.1; /* Уменьшаем межстрочный интервал */
+                margin-top: 0px;
+                font-size: 60px;
+                font-weight: bold;
+                color: #0D60AE;
+            }
+            .buttons {
+                margin-top: 20px;
+            }
+            .btn {
+                background-color: #0D60AE;
+                color: white;
+                border: none;
+                padding: 15px 30px;
+                font-size: 20px;
+                margin: 10px;
+                border-radius: 50px;
+                cursor: pointer;
+            }
+            .btn:hover {
+                background-color: #083a99;
+            }
+            .login-text {
+                font-size: 16px;
+                color: #242424;
+                margin-top: 16px;
+                /* margin-right: 40px; /* Добавляет отступ справа */
+                position: relative;
+                left: -100px; /* Сдвигаем влево */
+            }
+        
+            hr {
+                display: none;
+            }
+        </style>
+        
+        <div class="container">
+            <h1>ТУРКЛУБ</h1>
+            <h2>АРЕНДА СНАРЯЖЕНИЯ</h2>
+        
+            <div class="buttons">
+                <a href="{{ url_for('auth.login') }}" class="btn">Вход</a>
+                <a href="{{ url_for('auth.register') }}" class="btn">Регистрация</a>
+            </div>
+            <p class="login-text">Уже есть аккаунт?</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const flashes = document.querySelectorAll(".flash-message");
+    
+            flashes.forEach(function (flash) {
+                let hideTimeout;
+    
+                const startHideTimer = () => {
+                    hideTimeout = setTimeout(() => {
+                        flash.style.opacity = "0";
+                        flash.style.transition = "opacity 0.5s ease";
+                        setTimeout(() => flash.remove(), 500);
+                    }, 4000); // 4 секунды
+                };
+    
+                const stopHideTimer = () => clearTimeout(hideTimeout);
+    
+                // Запуск таймера по умолчанию
+                startHideTimer();
+    
+                // Если навели мышку — остановить таймер
+                flash.addEventListener("mouseenter", stopHideTimer);
+                // Убрали мышку — запустить таймер снова
+                flash.addEventListener("mouseleave", startHideTimer);
+            });
+        });
+    </script>    
+</body>
+
+</html>

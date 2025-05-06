@@ -22,10 +22,12 @@
                     <td>{{ item.title }}</td>
                     <td>{{ item.description }}</td>
                     <td class="actions">
-                        <a href="{{ url_for('reservation.reserve', id=item.id) }}" class="btn green">Арендовать</a>
+                        <a href="{{ url_for('reservation.reserve', equipment_id=item.id) }}" class="btn green">Забронировать</a>
                         {% if role == 'admin' %}
                             <a href="{{ url_for('equipment.edit_equipment', id=item.id) }}" class="btn blue">Редактировать</a>
-                            <a href="{{ url_for('equipment.delete_equipment', id=item.id) }}" class="btn red">Удалить</a>
+                            <form id="deleteForm-{{ item.id }}" action="{{ url_for('equipment.delete_equipment', equipment_id=item.id) }}" method="POST" style="display:inline;">
+                                <button type="button" class="btn red" onclick="showConfirm('Вы уверены, что хотите удалить {{ item.title | e }}?', 'deleteForm-{{ item.id }}')">Удалить</button>
+                            </form>
                         {% endif %}
                     </td>
                 </tr>
@@ -33,28 +35,60 @@
             </tbody>
         </table>
 
-        {% if role == 'admin' %}
+        <!-- Пагинация -->
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            {% if current_page > 1 %}
+                <a href="{{ url_for('equipment.arenda', page=current_page-1) }}" class="pagination-btn">← Назад</a>
+            {% endif %}
+            
+            <span class="page-info">Страница {{ current_page }} из {{ total_pages }}</span>
+            
+            {% if current_page < total_pages %}
+                <a href="{{ url_for('equipment.arenda', page=current_page+1) }}" class="pagination-btn">Вперед →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        
             <div class="admin-actions">
+                {% if role == 'admin' %}
                 <a href="{{ url_for('equipment.add_equipment') }}" class="btn blue">Добавить снаряжение</a>
+                {% endif %}
                 <a href="{{ url_for('reservation.view_reservations') }}" class="btn gray">Все брони</a>
             </div>
-        {% endif %}
+        
+    </div>
+
+    <!-- Модальное окно подтверждения -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <p id="confirmMessage"></p>
+            <div class="modal-actions">
+                <button id="confirmYes" class="btn blue">Да</button>
+                <button id="confirmNo" class="btn gray">Нет</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <style>
+    /* Стили для основного контента (оставляем без изменений) */
     .container {
         display: flex;
         flex-direction: column;
         align-items: center;
         margin-top: 40px;
+        width: 95%;
+        margin-left: auto;
+        margin-right: auto;
     }
     
     .heading {
         font-size: 2.5em;
         color: #0D60AE;
-        margin-bottom: 20px;
-        margin-top: 0px;
+        margin-bottom: 12px;
+        margin-top: -40px;
         font-weight: bold;
     }
     
@@ -63,33 +97,50 @@
         padding: 20px;
         border: 3px solid #0D60AE;
         border-radius: 40px;
-        width: 90%;
-        max-width: 900px;
+        width: 95%;
+        max-width: none;
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     }
     
     table {
         width: 100%;
         border-collapse: collapse;
+        table-layout: fixed;
     }
     
     th, td {
-        padding: 12px 15px;
+        padding: 10px 15px;
         text-align: center;
         border-bottom: 1px solid #ddd;
+    }
+
+    th:nth-child(1) { width: 10%; }
+    th:nth-child(2) { width: 15%; }
+    th:nth-child(3) { width: 40%; }
+    th:nth-child(4) { width: 30%; }
+
+    .actions {
+        text-align: center;
+        padding-right: 25px;
+        white-space: nowrap;
+    }
+
+    .actions .btn {
+        margin-left: 5px;
+        margin-right: 0;
     }
     
     th {
         background-color: #0D60AE;
         color: white;
         font-weight: normal;
-        
-        
     }
-    .th-top-left{
+    
+    .th-top-left {
         border-top-left-radius: 20px;
     }
-    .th-top-right{
+    
+    .th-top-right {
         border-top-right-radius: 20px;
     }
     
@@ -101,28 +152,143 @@
         font-size: 1em;
         margin: 2px;
         display: inline-block;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
     }
     
     .btn.green {
         background-color: #28a745;
     }
+    .btn.green:hover {
+        background-color: #218939;
+    }
     
     .btn.red {
         background-color: #dc3545;
+    }
+    .btn.red:hover {
+        background-color: #be2d3c;
     }
     
     .btn.blue {
         background-color: #007bff;
     }
+    .btn.blue:hover {
+        background-color: #036ddf;
+    }
     
     .btn.gray {
-        background-color: #6c757d;
+        background-color: #78818a;
     }
+    .btn.gray:hover {
+        background-color: #646c73;    }
     
     .admin-actions {
         margin-top: 20px;
         text-align: center;
     }
+
+    .pagination {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .pagination-btn {
+        padding: 8px 16px;
+        background-color: #0D60AE;
+        color: white;
+        text-decoration: none;
+        border-radius: 20px;
+        transition: background-color 0.3s;
+    }
+
+    .pagination-btn:hover {
+        background-color: #083a99;
+    }
+
+    .page-info {
+        font-size: 1.1em;
+    }
+
+    body {
+        overflow-y: auto !important;
+    }
+
+    /* Стили для модального окна */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border: 3px solid #0D60AE;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 400px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        font-family: "HSE Sans", sans-serif;
+    }
+
+    .modal-content p {
+        font-size: 1.2em;
+        color: #000000;
+        margin: 0 0 20px 0;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    .modal-actions .btn {
+        min-width: 120px; /* Задаем минимальную ширину кнопки */
+        text-align: center; /* Центрируем текст внутри кнопки */
+        font-size: 1.2em;
+    }
 </style>
-    
+
+<script>
+    function showConfirm(message, formId) {
+        // Показываем модальное окно
+        const modal = document.getElementById('confirmModal');
+        const messageElement = document.getElementById('confirmMessage');
+        modal.style.display = 'block';
+        messageElement.textContent = message;
+
+        // Кнопка "Да"
+        document.getElementById('confirmYes').onclick = function() {
+            document.getElementById(formId).submit(); // Отправляем форму
+        };
+
+        // Кнопка "Нет"
+        document.getElementById('confirmNo').onclick = function() {
+            modal.style.display = 'none'; // Скрываем окно
+        };
+    }
+
+    // Закрытие модального окна при клике вне его
+    document.getElementById('confirmModal').onclick = function(event) {
+        if (event.target === this) {
+            this.style.display = 'none';
+        }
+    };
+</script>
+
 {% endblock %}

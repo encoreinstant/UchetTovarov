@@ -51,6 +51,7 @@ def login():
 
         if user and check_password_hash(user[1], password):
             session['user_id'] = user[0]
+            session['username'] = username
             session['role'] = user[2]
             flash("Вход выполнен успешно!", "success")
             return redirect(url_for('equipment.arenda'))

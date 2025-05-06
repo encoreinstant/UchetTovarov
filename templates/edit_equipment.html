@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Редактировать Снаряжение{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="edit-form">
+        <h1 class="heading">Редактировать снаряжение</h1>
+        <form method="POST" action="{{ url_for('equipment.edit_equipment', id=equipment.id) }}">
+            <div class="form-group">
+                <label for="type">Тип:</label>
+                <input type="text" id="type" name="type" value="{{ equipment.type }}" required>
+            </div>
+            <div class="form-group">
+                <label for="title">Название:</label>
+                <input type="text" id="title" name="title" value="{{ equipment.title }}" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Описание:</label>
+                <input type="text" id="description" name="description" value="{{ equipment.description }}" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn blue">ОК</button>
+                <a href="{{ url_for('equipment.arenda') }}" class="btn gray">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        padding-top: 80px; /* Отступ сверху, чтобы форма была ближе к верху */
+    }
+
+    .edit-form {
+        /* background: white;
+        padding: 20px;
+        border: 3px solid #0D60AE;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        text-align: center; */
+
+        width: 350px;
+        margin: -40px auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 50px;
+        text-align: center;
+        border: 3px solid #0D60AE;
+    }
+
+    .heading {
+        font-size: 2em;
+        color: #0D60AE;
+        margin-bottom: 20px;
+        margin-top: 0px;
+        font-weight: bold;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    .form-group label {
+        font-size: 16px;
+        color: #333;
+        font-weight: bold;
+        display: block;
+        margin: 0 10px;
+        text-align: left;
+    }
+
+    /* .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+        box-sizing: border-box;
+    } */
+
+    .form-group input {
+        font-size: 1em;
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-top: 8px;
+        margin-bottom: 14px;
+        border: 1px solid #ccc;
+        border-radius: 50px;
+        box-sizing: border-box;
+    }
+    
+
+
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        background-color: #0D60AE;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        margin: 10px;
+        border-radius: 50px;
+        cursor: pointer;
+        
+    }
+
+    .btn:hover {
+        background-color: #083a99;
+    }
+    .btn.blue {
+        min-width: 100px;
+    }
+    .btn.gray {
+        background-color: #6c757d;
+    }
+</style>
+{% endblock %}

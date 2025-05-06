@@ -6,20 +6,25 @@
 <div class="form-container">
     <h2>Бронирование снаряжения</h2>
     {% if equipment %}
-        <p><strong>Вы выбрали:</strong> {{ equipment.name }}</p>
+        <p><strong>Бронь снаряжения</strong> {{ equipment.title }}</p>
+        <form method="POST" action="{{ url_for('reservation.reserve') }}">
+            <input type="hidden" name="equipment_id" value="{{ equipment.id }}">
+            <label class="label">Цель бронирования:</label>
+            <input type="text" name="reservation_goal" required placeholder='Например: ПВД "Оленьи ручьи"'>
+
+            <label class="label">Дата / Даты бронирования:</label>
+            <input type="text" name="reservation_date" required placeholder="Например: 14.04–16.04.2025">
+
+            <label class="label">Когда придете за снаряжением:</label>
+            <input type="text" name="date_take_equipment" required placeholder="Например: 13.04 после 18:00">
+
+            <button type="submit" class="btn">Забронировать</button>
+            <a href="{{ url_for('equipment.arenda') }}" class="btn gray">Отмена</a>
+        </form>
+    {% else %}
+        <p>Снаряжение не выбрано.</p>
+        <a href="{{ url_for('equipment.arenda') }}" class="btn gray">Вернуться</a>
     {% endif %}
-    <form method="POST" action="{{ url_for('reservation.reserve', equipment_id=equipment.id if equipment else None) }}">
-        <label class="label">Цель бронирования:</label>
-        <input type="text" name="reservation_goal" required placeholder='Например: ПВД "Оленьи ручьи"'>
-
-        <label class="label">Дата / Даты бронирования:</label>
-        <input type="text" name="reservation_date" required placeholder="Например: 14.04–16.04.2025">
-
-        <label class="label">Когда придете за снаряжением:</label>
-        <input type="text" name="date_take_equipment" required placeholder="Например: 13.04 после 18:00">
-
-        <button type="submit" class="btn">Забронировать</button>
-    </form>
 </div>
 
 <style>
@@ -72,6 +77,9 @@
 
     .btn:hover {
         background-color: #083a99;
+    }
+    .btn.gray {
+        background-color: #6c757d;
     }
 </style>
 {% endblock %}
