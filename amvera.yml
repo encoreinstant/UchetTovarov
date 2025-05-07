@@ -9,5 +9,5 @@ run:
   scriptName: run.py
   command: null
   persistenceMount: /data
-  containerPort: "80"
-  servicePort: "80"
+  containerPort: "5000"
+  servicePort: "5000"
