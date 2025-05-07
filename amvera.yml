@@ -9,6 +9,6 @@ build:
   requirementsPath: requirements.txt
 run:
   scriptName: ""
-  command: gunicorn run:app --bind 0.0.0.0:5000
+  command: gunicorn --bind 0.0.0.0:5000 run:app
   persistenceMount: /data
   containerPort: 5000
