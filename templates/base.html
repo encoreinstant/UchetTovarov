@@ -185,7 +185,9 @@
             <a href="{{ url_for('equipment.arenda') }}">ТУРКЛУБ</a>
             {% endblock %}
         </div>
-        <div class="header-right">         
+        <div class="header-right">
+            <!-- <img src="{{ url_for('static', filename='images/user.svg') }}" alt="Logout" class="header-image"> -->
+            
             <a href="{{ url_for('auth.logout') }}" title="Выйти">
                 <img src="{{ url_for('static', filename='images/logout.svg') }}" alt="Logout" class="header-image">
             </a>

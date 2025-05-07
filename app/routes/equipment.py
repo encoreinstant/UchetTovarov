@@ -22,7 +22,7 @@ def arenda(page=1):
     
     # Получаем записи для текущей страницы
     offset = (page - 1) * items_per_page
-    cur.execute("SELECT * FROM equipment LIMIT %s OFFSET %s", (items_per_page, offset))
+    cur.execute("SELECT * FROM equipment ORDER BY id LIMIT %s OFFSET %s", (items_per_page, offset))
     equipment_list = cur.fetchall()
     
     cur.close()
