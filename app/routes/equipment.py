@@ -22,15 +22,26 @@ def arenda(page=1):
     
     # Получаем записи для текущей страницы
     offset = (page - 1) * items_per_page
-    cur.execute("SELECT * FROM equipment ORDER BY id LIMIT %s OFFSET %s", (items_per_page, offset))
+    #cur.execute("SELECT * FROM equipment ORDER BY id LIMIT %s OFFSET %s", (items_per_page, offset))
+    cur.execute("""
+    SELECT 
+        equipment.id, 
+        equipment.title, 
+        equipment.description, 
+        equipment_types.name AS type_name
+    FROM equipment
+    JOIN equipment_types ON equipment.type_id = equipment_types.id
+    ORDER BY equipment.id
+    LIMIT %s OFFSET %s
+    """, (items_per_page, offset))
     equipment_list = cur.fetchall()
     
     cur.close()
     conn.close()
 
     equipment_list = [
-        {'id': row[0], 'type': row[1], 'title': row[2], 'description': row[3]}
-        for row in equipment_list
+    {'id': row[0], 'title': row[1], 'description': row[2], 'type': row[3]}
+    for row in equipment_list
     ]
 
     total_pages = (total_items + items_per_page - 1) // items_per_page
@@ -54,10 +65,20 @@ def add_equipment():
 
         conn = get_db_connection()
         cur = conn.cursor()
+
         cur.execute("""
-            INSERT INTO equipment (type, title, description) 
+            SELECT id
+            FROM equipment_types
+            WHERE name = %s
+                    
+        """,(type_,)
+        )
+        type_id = cur.fetchone()
+
+        cur.execute("""
+            INSERT INTO equipment (title, description, type_id) 
             VALUES (%s, %s, %s)
-        """, (type_, title, description))
+        """, (title, description, type_id))
         conn.commit()
         cur.close()
         conn.close()
@@ -81,9 +102,21 @@ def edit_equipment(id):
         title = request.form['title']
         description = request.form.get('description', '')
 
-        cur.execute(
-            "UPDATE equipment SET type = %s, title = %s, description = %s WHERE id = %s",
-            (type_, title, description, id)
+        cur.execute("""
+            SELECT id
+            FROM equipment_types
+            WHERE name = %s
+                    
+        """,(type_,)
+        )
+        type_id = cur.fetchone()
+
+        cur.execute("""
+            UPDATE equipment SET type_id = %s, title = %s, description = %s
+           
+            WHERE id = %s
+                    
+        """,(type_id, title, description, id)
         )
         conn.commit()
         cur.close()
@@ -93,7 +126,12 @@ def edit_equipment(id):
         return redirect(url_for('equipment.arenda'))
 
     # GET-запрос: загружаем данные для редактирования
-    cur.execute("SELECT type, title, description FROM equipment WHERE id = %s", (id,))
+    cur.execute("""
+                SELECT t.name, e.title, e.description
+                FROM equipment e
+                JOIN equipment_types t ON e.type_id = t.id
+                WHERE e.id = %s                
+                """, (id,))
     equipment = cur.fetchone()
     cur.close()
     conn.close()

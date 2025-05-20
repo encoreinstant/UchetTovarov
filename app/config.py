@@ -3,7 +3,8 @@
 #     DB_NAME = 'flaskdb'
 #     DB_USER = 'zaobogdan'
 #     DB_PASSWORD = '10102005526'
-#     DB_HOST = 'amvera-krxxj-cnpg-flaskdb-rw'
+#     DB_HOST = 'localhost'
+#     #DB_HOST = 'amvera-krxxj-cnpg-flaskdb-rw'
 #     DB_PORT = '5432'
 
 import os

@@ -49,11 +49,9 @@ def reserve():
 
             cur.execute("""
                 INSERT INTO reservations 
-                (username, name, study_group, telegram, reservation_goal, 
-                reservation_date, date_take_equipment, reserve_status, equipment_id) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (username, name, study_group, telegram, reservation_goal, 
-                  reservation_date, date_take_equipment, 'На рассмотрении', equipment[0]))
+                (reservation_goal, reservation_date, date_take_equipment, equipment_id, user_id, reserve_status_id) 
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (reservation_goal, reservation_date, date_take_equipment, equipment[0], user_id, 1))
 
             conn.commit()
             flash("Снаряжение успешно забронировано!", "success")
@@ -71,7 +69,7 @@ def reserve():
 @reservation_bp.route('/view_reservations', methods=['GET', 'POST'])
 def view_reservations():
     if 'user_id' not in session:
-        flash("Доступ запрещен.", "error")
+        flash("Пожалуйста, войдите в систему.", "error")
         return redirect(url_for('auth.login'))
 
     conn = get_db_connection()
@@ -98,7 +96,7 @@ def view_reservations():
             return redirect(url_for('reservation.view_reservations'))
 
         # Проверяем, существует ли бронирование
-        cur.execute("SELECT id, username FROM reservations WHERE id = %s", (reservation_id,))
+        cur.execute("SELECT id FROM reservations WHERE id = %s", (reservation_id,))
         reservation = cur.fetchone()
         if not reservation:
             flash("Бронирование не найдено.", "error")
@@ -109,11 +107,11 @@ def view_reservations():
          # Если действие — удаление
         if action == 'delete':
             # Проверяем права: админ может удалять всё, пользователь — только свои брони
-            if session.get('role') != 'admin' and reservation[1] != session['username']:
-                flash("У вас нет прав для удаления этого бронирования.", "error")
-                cur.close()
-                conn.close()
-                return redirect(url_for('reservation.view_reservations'))
+            #if session.get('role') != 'admin' and reservation[0] != session['user_id']:
+            #     flash("У вас нет прав для удаления этого бронирования.", "error")
+            #     cur.close()
+            #     conn.close()
+            #     return redirect(url_for('reservation.view_reservations'))
 
             # Удаляем бронирование
             cur.execute("DELETE FROM reservations WHERE id = %s", (reservation_id,))
@@ -124,11 +122,12 @@ def view_reservations():
             return redirect(url_for('reservation.view_reservations'))
 
         # Обновляем статус бронирования
-        new_status = 'Одобрено' if action == 'approve' else 'Отклонено'
-        cur.execute("UPDATE reservations SET reserve_status = %s WHERE id = %s", (new_status, reservation_id))
+        new_status = 2 if action == 'approve' else 3
+        new_status_text = 'Одобрено' if action == 'approve' else 'Отклонено'
+        cur.execute("UPDATE reservations SET reserve_status_id = %s WHERE id = %s", (new_status, reservation_id))
         conn.commit()
 
-        flash(f"Бронирование {new_status.lower()}.", "success" if action == 'approve' else "error")
+        flash(f"Бронирование {new_status_text.lower()}.", "success" if action == 'approve' else "error")
 
         cur.close()
         conn.close()
@@ -138,20 +137,26 @@ def view_reservations():
     if session.get('role') == 'admin':
         # Для админа показываем все бронирования
         cur.execute("""
-            SELECT r.id, r.username, r.name, r.study_group, r.telegram, r.reservation_goal, 
-                   r.reservation_date, r.date_take_equipment, r.reserve_status, e.title
+            SELECT r.id, u.username, u.name, u.study_group, u.telegram, r.reservation_goal, 
+                   r.reservation_date, r.date_take_equipment, r_statuses.name, e.title, et.name
             FROM reservations r
             JOIN equipment e ON r.equipment_id = e.id
+            JOIN equipment_types et ON e.type_id = et.id
+            JOIN users u ON r.user_id = u.id
+            JOIN reserve_statuses r_statuses ON r.reserve_status_id = r_statuses.id
             ORDER BY r.reservation_date DESC
         """)
     else:
         # Для пользователя только его бронирования
         cur.execute("""
-            SELECT r.id, r.username, r.name, r.study_group, r.telegram, r.reservation_goal, 
-                   r.reservation_date, r.date_take_equipment, r.reserve_status, e.title
+            SELECT r.id, u.username, u.name, u.study_group, u.telegram, r.reservation_goal, 
+                   r.reservation_date, r.date_take_equipment, r_statuses.name, e.title, et.name
             FROM reservations r
             JOIN equipment e ON r.equipment_id = e.id
-            WHERE r.username = %s
+            JOIN equipment_types et ON e.type_id = et.id
+            JOIN users u ON r.user_id = u.id
+            JOIN reserve_statuses r_statuses ON r.reserve_status_id = r_statuses.id
+            WHERE u.username = %s
             ORDER BY r.reservation_date DESC
         """, (session.get('username'),))
     
@@ -171,7 +176,8 @@ def view_reservations():
             'reservation_date': row[6],
             'date_take_equipment': row[7],
             'reserve_status': row[8],
-            'equipment_title': row[9]
+            'equipment_title': row[9],
+            'equipment_type': row[10],
         }
         for row in reservations
     ]
