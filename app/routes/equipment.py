@@ -19,6 +19,9 @@ def arenda(page=1):
     # Получаем общее количество записей
     cur.execute("SELECT COUNT(*) FROM equipment")
     total_items = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM equipment WHERE amount != 0")
+    total_items_without_zero_amount = cur.fetchone()[0]
     
     # Получаем записи для текущей страницы
     offset = (page - 1) * items_per_page
@@ -28,9 +31,11 @@ def arenda(page=1):
         equipment.id, 
         equipment.title, 
         equipment.description, 
-        equipment_types.name AS type_name
+        equipment_types.name AS type_name,
+        equipment.amount
     FROM equipment
     JOIN equipment_types ON equipment.type_id = equipment_types.id
+    WHERE equipment.amount != 0
     ORDER BY equipment.id
     LIMIT %s OFFSET %s
     """, (items_per_page, offset))
@@ -40,11 +45,11 @@ def arenda(page=1):
     conn.close()
 
     equipment_list = [
-    {'id': row[0], 'title': row[1], 'description': row[2], 'type': row[3]}
+    {'id': row[0], 'title': row[1], 'description': row[2], 'type': row[3], 'amount': row[4]}
     for row in equipment_list
     ]
 
-    total_pages = (total_items + items_per_page - 1) // items_per_page
+    total_pages = (total_items_without_zero_amount + items_per_page - 1) // items_per_page
 
     return render_template('arenda.html', 
                          equipment=equipment_list, 
@@ -62,6 +67,7 @@ def add_equipment():
         type_ = request.form['type']
         title = request.form['title']
         description = request.form.get('description', '')
+        amount = request.form['amount']
 
         conn = get_db_connection()
         cur = conn.cursor()
@@ -76,9 +82,9 @@ def add_equipment():
         type_id = cur.fetchone()
 
         cur.execute("""
-            INSERT INTO equipment (title, description, type_id) 
-            VALUES (%s, %s, %s)
-        """, (title, description, type_id))
+            INSERT INTO equipment (title, description, type_id, amount) 
+            VALUES (%s, %s, %s, %s)
+        """, (title, description, type_id, amount))
         conn.commit()
         cur.close()
         conn.close()
@@ -101,6 +107,7 @@ def edit_equipment(id):
         type_ = request.form['type']
         title = request.form['title']
         description = request.form.get('description', '')
+        amount = request.form['amount']
 
         cur.execute("""
             SELECT id
@@ -112,11 +119,11 @@ def edit_equipment(id):
         type_id = cur.fetchone()
 
         cur.execute("""
-            UPDATE equipment SET type_id = %s, title = %s, description = %s
+            UPDATE equipment SET type_id = %s, title = %s, description = %s, amount = %s
            
             WHERE id = %s
                     
-        """,(type_id, title, description, id)
+        """,(type_id, title, description, amount, id)
         )
         conn.commit()
         cur.close()
@@ -127,7 +134,7 @@ def edit_equipment(id):
 
     # GET-запрос: загружаем данные для редактирования
     cur.execute("""
-                SELECT t.name, e.title, e.description
+                SELECT t.name, e.title, e.description, e.amount
                 FROM equipment e
                 JOIN equipment_types t ON e.type_id = t.id
                 WHERE e.id = %s                
@@ -140,7 +147,8 @@ def edit_equipment(id):
         'id': id,
         'type': equipment[0],
         'title': equipment[1],
-        'description': equipment[2] if equipment[2] else ''
+        'description': equipment[2] if equipment[2] else '',
+        'amount': equipment[3]
     }
     return render_template('edit_equipment.html', equipment=equipment_data)
 

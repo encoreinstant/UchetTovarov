@@ -9,13 +9,109 @@
         {% if reservations %}
             {% for reservation in reservations %}
             <div class="reservation-block">
+                
+                {% if role == 'admin' %}
+                    <!-- Крестик для удаления -->
+                    <form action="{{ url_for('reservation.view_reservations') }}" method="POST" class="delete-form">
+                        <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="delete-btn" title="Удалить бронирование">✖</button>
+                    </form>
+                {% endif %}
 
-                <!-- Крестик для удаления -->
-                <form action="{{ url_for('reservation.view_reservations') }}" method="POST" class="delete-form">
-                    <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
-                    <input type="hidden" name="action" value="delete">
-                    <button type="submit" class="delete-btn" title="Удалить бронирование">✖</button>
-                </form>
+                <div class="reservation-details">
+                    <div class="user-info">
+                        {{ reservation.username }}, {{ reservation.name }}, {{ reservation.study_group }}, {{ reservation.telegram }}
+                    </div>
+                    <div class="equipment-title">
+                        {{ reservation.equipment_type }}, {{ reservation.equipment_title }}
+                    </div>
+                    <div class="reservation-info">
+                        <div>Цель бронирования: {{ reservation.reservation_goal }}</div>
+                        <div>Даты: {{ reservation.reservation_date }}</div>
+                        <div>Приду за снаряжением: {{ reservation.date_take_equipment }}</div>
+                    </div>
+                </div>
+                <div class="reservation-actions">
+                    {% if role == 'user' %}
+                        {% if reservation.reserve_status == 'Одобрено' %}
+                        <div class="status green">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                        {% if reservation.reserve_status == 'Отклонено' %}
+                            <div class="status red">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                        {% if reservation.reserve_status == 'На рассмотрении' %}
+                            <div class="status">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                        {% if reservation.reserve_status == 'Выдано' %}
+                            <div class="status">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                        {% if reservation.reserve_status == 'Возвращено' %}
+                            <div class="status green">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                        {% if reservation.reserve_status == 'Не возвращено' %}
+                            <div class="status red">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% if role == 'admin' %}
+                        {% if reservation.reserve_status == 'На рассмотрении' %}
+                            <div class="status">{{ reservation.reserve_status }}</div>
+                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit" class="btn green">Одобрить</button>
+                            </form>
+                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit" class="btn red">Отклонить</button>
+                            </form>
+                        {% elif reservation.reserve_status == 'Одобрено' %}
+                            <div class="status green">{{ reservation.reserve_status }}</div>
+                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                <input type="hidden" name="action" value="confirm_delivery">
+                                <button type="submit" class="btn blue">Подтвердить выдачу</button>
+                            </form>
+                        {% elif reservation.reserve_status == 'Выдано' %}
+                            <div class="status">{{ reservation.reserve_status }}</div>
+                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                <input type="hidden" name="action" value="confirm_return">
+                                <button type="submit" class="btn blue">Подтвердить возврат</button>
+                            </form>
+                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                <input type="hidden" name="action" value="confirm_no_return">
+                                <button type="submit" class="btn red">Снаряжение не возвращено</button>
+                            </form>
+                        {% elif reservation.reserve_status == 'Отклонено' %}
+                            <div class="status red">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <p>Текущих бронирований нет</p>
+        {% endif %}
+    </div>
+    <p></p>
+    <h1 class="heading">ИСТОРИЯ БРОНИРОВАНИЙ</h1>
+    <div class="reservations-list">
+        {% if reservations_history %}
+            {% for reservation in reservations_history %}
+            <div class="reservation-block">
+                
+                {% if role == 'admin' %}
+                    <!-- Крестик для удаления -->
+                    <form action="{{ url_for('reservation.view_reservations') }}" method="POST" class="delete-form">
+                        <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="delete-btn" title="Удалить бронирование">✖</button>
+                    </form>
+                {% endif %}
 
                 <div class="reservation-details">
                     <div class="user-info">
@@ -41,40 +137,36 @@
                         {% if reservation.reserve_status == 'На рассмотрении' %}
                             <div class="status">{{ reservation.reserve_status }}</div>
                         {% endif %}
+                        {% if reservation.reserve_status == 'Выдано' %}
+                            <div class="status">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                        {% if reservation.reserve_status == 'Возвращено' %}
+                            <div class="status green">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                        {% if reservation.reserve_status == 'Не возвращено' %}
+                            <div class="status red">{{ reservation.reserve_status }}</div>
+                        {% endif %}
                     {% endif %}
                     
                     {% if role == 'admin' %}
-                        <div class="status">{{ reservation.reserve_status }}</div>
-                        {% if reservation.reserve_status == 'На рассмотрении' %}
-                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
-                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
-                                <input type="hidden" name="action" value="approve">
-                                <button type="submit" class="btn green">Одобрить</button>
-                            </form>
-                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
-                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
-                                <input type="hidden" name="action" value="reject">
-                                <button type="submit" class="btn red">Отклонить</button>
-                            </form>
-                        {% elif reservation.reserve_status == 'Одобрено' %}
-                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
-                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
-                                <input type="hidden" name="action" value="reject">
-                                <button type="submit" class="btn red">Отклонить</button>
-                            </form>
-                        {% elif reservation.reserve_status == 'Отклонено' %}
-                            <form action="{{ url_for('reservation.view_reservations') }}" method="POST" style="display:inline;">
-                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
-                                <input type="hidden" name="action" value="approve">
-                                <button type="submit" class="btn green">Одобрить</button>
-                            </form>
+                        {% if reservation.reserve_status == 'Возвращено' %}
+                            <div class="status green">{{ reservation.reserve_status }}</div>
                         {% endif %}
+                        {% if reservation.reserve_status == 'Не возвращено' %}
+                            <div class="status red">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+                        {% if reservation.reserve_status == 'Отклонено' %}
+                            <div class="status red">{{ reservation.reserve_status }}</div>
+                        {% endif %}
+
+
+
                     {% endif %}
                 </div>
             </div>
             {% endfor %}
         {% else %}
-        <p>Бронирований пока нет.</p>
+        <p>Завершенных бронирований пока нет</p>
         {% endif %}
     </div>
 </div>
@@ -197,6 +289,13 @@
     .btn.red:hover {
         background-color: #be2d3c;
     }
+    .btn.blue {
+        background-color: #0D60AE;
+    }
+    .btn.blue:hover {
+        background-color: #0a4a87;
+    }
+
     
     p {
         color: #0D60AE;

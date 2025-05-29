@@ -19,6 +19,10 @@
                 <label for="description">Описание:</label>
                 <input type="text" id="description" name="description" value="{{ equipment.description }}">
             </div>
+            <div class="form-group">
+                <label for="description">Количество:</label>
+                <input type="text" id="amount" name="amount" value="{{ equipment.amount }}">
+            </div>
             <div class="form-actions">
                 <button type="submit" class="btn blue">ОК</button>
                 <a href="{{ url_for('equipment.arenda') }}" class="btn gray">Отмена</a>

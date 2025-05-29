@@ -11,7 +11,7 @@
                 <tr>
                     <th class="th-top-left">Тип</th>
                     <th>Название</th>
-                    <th>Описание</th>
+                    <th>Описание{% if role == 'admin' %}, Количество{% endif %}</th>
                     <th class="th-top-right">Действия</th>
                 </tr>
             </thead>
@@ -20,7 +20,9 @@
                 <tr>
                     <td>{{ item.type }}</td>
                     <td>{{ item.title }}</td>
-                    <td>{{ item.description }}</td>
+                    <td>{{ item.description }}{% if role == 'admin' %}, <strong>{{ item.amount }} шт.</strong>
+                        {% endif %}
+                    </td>
                     <td class="actions">
                         <a href="{{ url_for('reservation.reserve', equipment_id=item.id) }}" class="btn green">Забронировать</a>
                         {% if role == 'admin' %}
